@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlogTech - Artigos sobre Desenvolvimento e Tecnologia</title>
+    <style>
+        /* ===== RESET E CONFIGURAÇÕES GERAIS ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: #0a0a0a;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* ===== FUNDO AMBILIGHT GIRATÓRIO ===== */
+        .ambilight {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            background: radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.8) 100%);
+        }
+
+        .ambilight::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                from 0deg,
+                #ff0000,
+                #ff8800,
+                #ffff00,
+                #00ff00,
+                #0088ff,
+                #8800ff,
+                #ff0088,
+                #ff0000
+            );
+            animation: girarAmbilight 8s linear infinite;
+            opacity: 0.15;
+            filter: blur(60px);
+            border-radius: 50%;
+        }
+
+        @keyframes girarAmbilight {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        .ambilight::after {
+            content: '';
+            position: absolute;
+            top: -30%;
+            left: -30%;
+            width: 160%;
+            height: 160%;
+            background: conic-gradient(
+                from 180deg,
+                #ff00ff,
+                #00ffff,
+                #ff00ff,
+                #00ffff,
+                #ff00ff
+            );
+            animation: girarAmbilight2 12s linear infinite;
+            opacity: 0.08;
+            filter: blur(80px);
+            border-radius: 50%;
+        }
+
+        @keyframes girarAmbilight2 {
+            0% { transform: rotate(0deg) scale(1); }
+            100% { transform: rotate(360deg) scale(1.3); }
+        }
+
+        /* ===== CONTAINER PRINCIPAL ===== */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* ===== CABEÇALHO ===== */
+        header {
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(15px);
+            border-radius: 30px;
+            padding: 40px 50px;
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.5s ease;
+            box-shadow: 
+                0 0 40px rgba(255, 0, 0, 0.2),
+                0 0 80px rgba(0, 255, 0, 0.1),
+                0 0 120px rgba(0, 0, 255, 0.1);
+            animation: pulseBorder 3s ease-in-out infinite;
+            margin-bottom: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        @keyframes pulseBorder {
+            0%, 100% { 
+                box-shadow: 
+                    0 0 40px rgba(255, 0, 0, 0.2),
+                    0 0 80px rgba(0, 255, 0, 0.1),
+                    0 0 120px rgba(0, 0, 255, 0.1);
+            }
+            33% {
+                box-shadow: 
+                    0 0 60px rgba(0, 255, 0, 0.2),
+                    0 0 100px rgba(255, 0, 255, 0.1),
+                    0 0 140px rgba(255, 255, 0, 0.1);
+            }
+            66% {
+                box-shadow: 
+                    0 0 60px rgba(0, 0, 255, 0.2),
+                    0 0 100px rgba(0, 255, 255, 0.1),
+                    0 0 140px rgba(255, 0, 0, 0.1);
+            }
+        }
+
+        .logo h1 {
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-shadow: 0 0 30px currentColor, 0 0 60px currentColor;
+            transition: all 0.5s ease;
+            font-family: 'Orbitron', sans-serif;
+            color: #fff;
+        }
+
+        .logo p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            letter-spacing: 4px;
+            transition: all 0.5s ease;
+            text-shadow: 0 0 20px currentColor;
+            color: #fff;
+        }
+
+        nav {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Orbitron', sans-serif;
+            color: #fff;
+        }
+
+        nav a:hover {
+            transform: scale(1.05) translateY(-2px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: currentColor;
+            box-shadow: 0 0 30px currentColor;
+        }
+
+        /* ===== BARRA LATERAL FILTROS ===== */
+        .main-content {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .sidebar {
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px currentColor;
+            color: #fff;
+        }
+
+        .filter-group {
+            margin-bottom: 25px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #fff;
+        }
+
+        .filter-group input[type="checkbox"] {
+            margin-right: 8px;
+            cursor: pointer;
+            accent-color: currentColor;
+        }
+
+        /* ===== SEÇÃO ARTIGOS ===== */
+        .articles-section {
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 40px;
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.5s ease;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 40px;
+            transition: all 0.5s ease;
+            text-shadow: 0 0 30px currentColor, 0 0 60px currentColor;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 2px;
+            color: #fff;
+        }
+
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .article-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 2px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 25px;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(5px);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .article-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 16px;
+            background: conic-gradient(from 0deg, #ff0000, #ff8800, #ffff00, #00ff00, #0088ff, #8800ff, #ff0088, #ff0000);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: -1;
+            animation: girarBorda 3s linear infinite;
+        }
+
+        @keyframes girarBorda {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .article-card:hover::before {
+            opacity: 1;
+        }
+
+        .article-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 50px currentColor;
+        }
+
+        .article-header {
+            margin-bottom: 15px;
+            flex-grow: 1;
+        }
+
+        .article-category {
+            display: inline-block;
+            font-size: 0.75rem;
+            padding: 5px 12px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #fff;
+        }
+
+        .article-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            font-family: 'Orbitron', sans-serif;
+            color: #fff;
+        }
+
+        .article-excerpt {
+            font-size: 0.95rem;
+            opacity: 0.85;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .article-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .article-date {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            color: #fff;
+        }
+
+        .article-author {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            font-style: italic;
+            color: #fff;
+        }
+
+        .article-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .tag {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #fff;
+        }
+
+        .tag:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: currentColor;
+            box-shadow: 0 0 15px currentColor;
+        }
+
+        /* ===== BOTÃO LER MAIS ===== */
+        .btn {
+            padding: 12px 25px;
+            border-radius: 8px;
+            border: 2px solid;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.03);
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Orbitron', sans-serif;
+            position: relative;
+            overflow: hidden;
+            align-self: flex-start;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(255,255,255,0.1), transparent, rgba(255,255,255,0.1), transparent);
+            animation: girarBtn 3s linear infinite;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn:hover::before {
+            opacity: 1;
+        }
+
+        @keyframes girarBtn {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .btn:hover {
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: 0 0 40px currentColor, 0 0 80px currentColor;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* ===== RODAPÉ ===== */
+        footer {
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(15px);
+            border-radius: 30px;
+            padding: 40px 50px;
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            margin-top: 40px;
+            text-align: center;
+            transition: all 0.5s ease;
+            box-shadow: 
+                0 0 40px rgba(255, 0, 0, 0.2),
+                0 0 80px rgba(0, 255, 0, 0.1),
+                0 0 120px rgba(0, 0, 255, 0.1);
+        }
+
+        footer p {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            transition: all 0.5s ease;
+            letter-spacing: 2px;
+            font-family: 'Orbitron', sans-serif;
+            color: #fff;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .social-links a {
+            text-decoration: none;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            padding: 10px 16px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+        }
+
+        .social-links a::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 8px;
+            background: conic-gradient(from 0deg, #ff0000, #ff8800, #ffff00, #00ff00, #0088ff, #8800ff, #ff0088, #ff0000);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+            animation: girarBorda 2s linear infinite;
+        }
+
+        .social-links a:hover::before {
+            opacity: 1;
+        }
+
+        .social-links a:hover {
+            transform: scale(1.15) translateY(-3px);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 30px currentColor;
+        }
+
+        /* ===== SCROLLBAR GAMER ===== */
+        ::-webkit-scrollbar {
+            width: 8px;
+            background: #0a0a0a;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            border-radius: 4px;
+            background: conic-gradient(from 0deg, #ff0000, #ff8800, #ffff00, #00ff00, #0088ff, #8800ff, #ff0088, #ff0000);
+            animation: girarBorda 2s linear infinite;
+        }
+
+        /* ===== RESPONSIVIDADE ===== */
+        @media (max-width: 768px) {
+            header {
+                padding: 25px;
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .logo h1 {
+                font-size: 1.8rem;
+            }
+
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+                order: 2;
+            }
+
+            .articles-section {
+                order: 1;
+            }
+
+            .articles-grid {
+                grid-template-columns: 1fr;
+            }
+
+            footer {
+                padding: 25px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 18px;
+                border-radius: 20px;
+            }
+
+            .logo h1 {
+                font-size: 1.5rem;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .article-title {
+                font-size: 1.1rem;
+            }
+
+            nav a {
+                padding: 8px 12px;
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== FUNDO AMBILIGHT ===== -->
+    <div class="ambilight"></div>
+
+    <!-- ===== CONTAINER PRINCIPAL ===== -->
+    <div class="container">
+        <!-- CABEÇALHO -->
+        <header>
+            <div class="logo">
+                <h1 id="nome">BlogTech</h1>
+                <p id="subtitulo">✦ TECH & INOVAÇÃO ✦</p>
+            </div>
+            <nav>
+                <a href="#" id="link-inicio">Início</a>
+                <a href="#" id="link-categorias">Categorias</a>
+                <a href="#" id="link-populares">Populares</a>
+                <a href="#" id="link-contato">Contato</a>
+            </nav>
+        </header>
+
+        <!-- CONTEÚDO PRINCIPAL -->
+        <div class="main-content">
+            <!-- BARRA LATERAL -->
+            <aside class="sidebar" id="sidebar">
+                <h3>🎮 Filtros</h3>
+                
+                <div class="filter-group">
+                    <label>
+                        <input type="checkbox" class="category-filter" value="frontend" checked>
+                        Frontend
+                    </label>
+                    <label>
+                        <input type="checkbox" class="category-filter" value="backend" checked>
+                        Backend
+                    </label>
+                    <label>
+                        <input type="checkbox" class="category-filter" value="devops" checked>
+                        DevOps
+                    </label>
+                    <label>
+                        <input type="checkbox" class="category-filter" value="ia" checked>
+                        Inteligência Artificial
+                    </label>
+                </div>
+
+                <div class="filter-group">
+                    <label>
+                        <input type="checkbox" class="level-filter" value="iniciante" checked>
+                        Iniciante
+                    </label>
+                    <label>
+                        <input type="checkbox" class="level-filter" value="intermediario" checked>
+                        Intermediário
+                    </label>
+                    <label>
+                        <input type="checkbox" class="level-filter" value="avancado" checked>
+                        Avançado
+                    </label>
+                </div>
+            </aside>
+
+            <!-- SEÇÃO ARTIGOS -->
+            <section class="articles-section">
+                <h2 class="section-title" id="titulo-artigos">✦ ÚLTIMOS ARTIGOS ✦</h2>
+                <div class="articles-grid" id="articles-grid">
+                    <!-- Artigos serão inseridos aqui via JavaScript -->
+                </div>
+            </section>
+        </div>
+
+        <!-- RODAPÉ -->
+        <footer>
+            <p id="footer-texto">© 2026 BlogTech — Todos os direitos reservados</p>
+            <div class="social-links">
+                <a href="#" id="social-github">🐙</a>
+                <a href="#" id="social-linkedin">🔗</a>
+                <a href="#" id="social-twitter">🐦</a>
+                <a href="#" id="social-rss">📡</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // ============================================================
+        //  BLOGTECH - SISTEMA DE ARTIGOS COM EFEITO RGB GAMER
+        // ============================================================
+
+        // ---- Dados dos Artigos ----
+        const artigos = [
+            {
+                id: 1,
+                titulo: "Dominando React em 2026",
+                categoria: "frontend",
+                nivel: "intermediario",
+                resumo: "Guia completo sobre as novas features do React 19 e como utilizá-las nos seus projetos.",
+                data: "15/01/2026",
+                autor: "Fabricio Benelli",
+                tags: ["React", "JavaScript", "Frontend"]
+            },
+            {
+                id: 2,
+                titulo: "Node.js: Escalabilidade em Produção",
+                categoria: "backend",
+                nivel: "avancado",
+                resumo: "Técnicas avançadas para escalar aplicações Node.js em ambiente de produção com alta performance.",
+                data: "14/01/2026",
+                autor: "Dev Master",
+                tags: ["Node.js", "Backend", "Performance"]
+            },
+            {
+                id: 3,
+                titulo: "IA Generativa para Developers",
+                categoria: "ia",
+                nivel: "intermediario",
+                resumo: "Como integrar modelos de IA generativa em suas aplicações usando APIs modernas.",
+                data: "13/01/2026",
+                autor: "AI Expert",
+                tags: ["IA", "APIs", "ChatGPT"]
+            },
+            {
+                id: 4,
+                titulo: "Docker e Kubernetes: Guia Prático",
+                categoria: "devops",
+                nivel: "intermediario",
+                resumo: "Deploy containerizado sem mistérios: do Docker ao Kubernetes em uma aplicação real.",
+                data: "12/01/2026",
+                autor: "DevOps Pro",
+                tags: ["Docker", "Kubernetes", "DevOps"]
+            },
+            {
+                id: 5,
+                titulo: "Iniciando com TypeScript",
+                categoria: "frontend",
+                nivel: "iniciante",
+                resumo: "Aprenda os conceitos fundamentais do TypeScript e como começar a usar na sua próxima aplicação.",
+                data: "11/01/2026",
+                autor: "Tech Mentor",
+                tags: ["TypeScript", "JavaScript", "Iniciante"]
+            },
+            {
+                id: 6,
+                titulo: "Otimização de Banco de Dados",
+                categoria: "backend",
+                nivel: "avancado",
+                resumo: "Estratégias de indexação, particionamento e query optimization para databases de alta performance.",
+                data: "10/01/2026",
+                autor: "Database Guru",
+                tags: ["SQL", "Performance", "Database"]
+            },
+            {
+                id: 7,
+                titulo: "CSS Grid: Layout Responsivo",
+                categoria: "frontend",
+                nivel: "intermediario",
+                resumo: "Crie layouts responsivos e modernos usando CSS Grid com máximo controle e flexibilidade.",
+                data: "09/01/2026",
+                autor: "Frontend Master",
+                tags: ["CSS", "Grid", "Design"]
+            },
+            {
+                id: 8,
+                titulo: "CI/CD com GitHub Actions",
+                categoria: "devops",
+                nivel: "intermediario",
+                resumo: "Automatize seu workflow de desenvolvimento com pipelines CI/CD usando GitHub Actions.",
+                data: "08/01/2026",
+                autor: "Automation Dev",
+                tags: ["GitHub", "CI/CD", "Automação"]
+            },
+            {
+                id: 9,
+                titulo: "APIs RESTful: Boas Práticas",
+                categoria: "backend",
+                nivel: "intermediario",
+                resumo: "Desenvolva APIs robustas e escaláveis seguindo as melhores práticas REST.",
+                data: "07/01/2026",
+                autor: "API Designer",
+                tags: ["REST", "API", "Backend"]
+            },
+            {
+                id: 10,
+                titulo: "Web Components: O Futuro",
+                categoria: "frontend",
+                nivel: "avancado",
+                resumo: "Construa componentes reutilizáveis e agnósticos de framework com Web Components.",
+                data: "06/01/2026",
+                autor: "Frontend Pioneer",
+                tags: ["Web Components", "JavaScript", "Moderno"]
+            }
+        ];
+
+        // ---- Função que gera uma cor RGB vibrante ----
+        function corNeon() {
+            const r = Math.floor(Math.random() * 200 + 55);
+            const g = Math.floor(Math.random() * 200 + 55);
+            const b = Math.floor(Math.random() * 200 + 55);
+            return `rgb(${r}, ${g}, ${b})`;
+        }
+
+        // ---- Renderiza os artigos ----
+        function renderizarArtigos(artigos) {
+            const grid = document.getElementById('articles-grid');
+            grid.innerHTML = '';
+
+            artigos.forEach(artigo => {
+                const card = document.createElement('div');
+                card.className = 'article-card';
+                card.innerHTML = `
+                    <div class="article-header">
+                        <span class="article-category">${artigo.categoria}</span>
+                        <h3 class="article-title">${artigo.titulo}</h3>
+                        <p class="article-excerpt">${artigo.resumo}</p>
+                    </div>
+                    <div class="article-tags">
+                        ${artigo.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                    </div>
+                    <div class="article-footer">
+                        <span class="article-date">${artigo.data}</span>
+                        <span class="article-author">Por ${artigo.autor}</span>
+                    </div>
+                    <a href="#" class="btn">📖 Ler Mais</a>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // ---- Aplica cores RGB aos elementos ----
+        function aplicarCoresRGB() {
+            const elementos = {
+                nome: document.getElementById('nome'),
+                subtitulo: document.getElementById('subtitulo'),
+                tituloArtigos: document.getElementById('titulo-artigos'),
+                footerTexto: document.getElementById('footer-texto'),
+                linkInicio: document.getElementById('link-inicio'),
+                linkCategorias: document.getElementById('link-categorias'),
+                linkPopulares: document.getElementById('link-populares'),
+                linkContato: document.getElementById('link-contato'),
+                socialGithub: document.getElementById('social-github'),
+                socialLinkedin: document.getElementById('social-linkedin'),
+                socialTwitter: document.getElementById('social-twitter'),
+                socialRss: document.getElementById('social-rss')
+            };
+
+            if (elementos.nome) elementos.nome.style.color = corNeon();
+            if (elementos.subtitulo) elementos.subtitulo.style.color = corNeon();
+            if (elementos.tituloArtigos) elementos.tituloArtigos.style.color = corNeon();
+            if (elementos.footerTexto) elementos.footerTexto.style.color = corNeon();
+
+            if (elementos.linkInicio) elementos.linkInicio.style.color = corNeon();
+            if (elementos.linkCategorias) elementos.linkCategorias.style.color = corNeon();
+            if (elementos.linkPopulares) elementos.linkPopulares.style.color = corNeon();
+            if (elementos.linkContato) elementos.linkContato.style.color = corNeon();
+
+            if (elementos.socialGithub) elementos.socialGithub.style.color = corNeon();
+            if (elementos.socialLinkedin) elementos.socialLinkedin.style.color = corNeon();
+            if (elementos.socialTwitter) elementos.socialTwitter.style.color = corNeon();
+            if (elementos.socialRss) elementos.socialRss.style.color = corNeon();
+
+            // Cores para os cards de artigos
+            const cards = document.querySelectorAll('.article-card');
+            cards.forEach(card => {
+                const cor = corNeon();
+                card.style.borderColor = cor;
+            });
+
+            // Cores para os tags
+            const tags = document.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                tag.style.color = corNeon();
+            });
+        }
+
+        // ---- Sistema de Filtros ----
+        function configurarFiltros() {
+            const categoryFilters = document.querySelectorAll('.category-filter');
+            const levelFilters = document.querySelectorAll('.level-filter');
+
+            function aplicarFiltros() {
+                const categoriasChecked = Array.from(categoryFilters)
+                    .filter(f => f.checked)
+                    .map(f => f.value);
+                const nivelChecked = Array.from(levelFilters)
+                    .filter(f => f.checked)
+                    .map(f => f.value);
+
+                const filtrados = artigos.filter(artigo => 
+                    categoriasChecked.includes(artigo.categoria) &&
+                    nivelChecked.includes(artigo.nivel)
+                );
+
+                renderizarArtigos(filtrados);
+                aplicarCoresRGB();
+            }
+
+            categoryFilters.forEach(filter => {
+                filter.addEventListener('change', aplicarFiltros);
+            });
+
+            levelFilters.forEach(filter => {
+                filter.addEventListener('change', aplicarFiltros);
+            });
+        }
+
+        // ---- Inicia a animação RGB ----
+        function animacaoRGB() {
+            aplicarCoresRGB();
+        }
+
+        setInterval(animacaoRGB, 500);
+
+        // ---- Inicialização ----
+        window.addEventListener('DOMContentLoaded', () => {
+            renderizarArtigos(artigos);
+            configurarFiltros();
+            animacaoRGB();
+        });
+
+        console.log('🎮 BlogTech - Portal de Tecnologia RGB Ativado!');
+        console.log('🌈 Efeito Ambilight giratório iniciado!');
+        console.log('⚡ Filtre seus artigos favoritos!');
+    </script>
+
+</body>
+</html>
